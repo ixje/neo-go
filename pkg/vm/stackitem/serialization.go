@@ -15,7 +15,7 @@ import (
 const MaxDeserialized = 2048
 
 // typicalNumOfItems is the number of items covering most serialization needs.
-// It's a hint used for map creation, so it does not limit anything, it's just
+// It's a hint used for map creation, so it does not Limit anything, it's just
 // a microoptimization to avoid excessive reallocations. Most of the serialized
 // items are structs, so there is at least one of them.
 const typicalNumOfItems = 4
@@ -36,11 +36,11 @@ type SerializationContext struct {
 	seen         map[Item]sliceNoPointer
 }
 
-// deserContext is an internal deserialization context.
-type deserContext struct {
+// DeserContext is an internal deserialization context.
+type DeserContext struct {
 	*io.BinReader
 	allowInvalid bool
-	limit        int
+	Limit        int
 }
 
 // Serialize encodes the given Item into a byte slice.
@@ -237,33 +237,33 @@ func Deserialize(data []byte) (Item, error) {
 // as a function because Item itself is an interface. Caveat: always check
 // reader's error value before using the returned Item.
 func DecodeBinary(r *io.BinReader) Item {
-	dc := deserContext{
+	dc := DeserContext{
 		BinReader:    r,
 		allowInvalid: false,
-		limit:        MaxDeserialized,
+		Limit:        MaxDeserialized,
 	}
-	return dc.decodeBinary()
+	return dc.DecodeBinary()
 }
 
 // DecodeBinaryProtected is similar to DecodeBinary but allows Interop and
 // Invalid values to be present (making it symmetric to EncodeBinaryProtected).
 func DecodeBinaryProtected(r *io.BinReader) Item {
-	dc := deserContext{
+	dc := DeserContext{
 		BinReader:    r,
 		allowInvalid: true,
-		limit:        MaxDeserialized,
+		Limit:        MaxDeserialized,
 	}
-	return dc.decodeBinary()
+	return dc.DecodeBinary()
 }
 
-func (r *deserContext) decodeBinary() Item {
+func (r *DeserContext) DecodeBinary() Item {
 	var t = Type(r.ReadB())
 	if r.Err != nil {
 		return nil
 	}
 
-	r.limit--
-	if r.limit < 0 {
+	r.Limit--
+	if r.Limit < 0 {
 		r.Err = errTooBigElements
 		return nil
 	}
@@ -289,7 +289,7 @@ func (r *deserContext) decodeBinary() Item {
 		}
 		arr := make([]Item, size)
 		for i := 0; i < size; i++ {
-			arr[i] = r.decodeBinary()
+			arr[i] = r.DecodeBinary()
 		}
 
 		if t == ArrayT {
@@ -304,8 +304,8 @@ func (r *deserContext) decodeBinary() Item {
 		}
 		m := NewMap()
 		for i := 0; i < size; i++ {
-			key := r.decodeBinary()
-			value := r.decodeBinary()
+			key := r.DecodeBinary()
+			value := r.DecodeBinary()
 			if r.Err != nil {
 				break
 			}

@@ -426,7 +426,7 @@ func NewBigInteger(value *big.Int) *BigInteger {
 	return (*BigInteger)(value)
 }
 
-// CheckIntegerSize checks that the value size doesn't exceed the VM limit for Interer.
+// CheckIntegerSize checks that the value size doesn't exceed the VM Limit for Interer.
 func CheckIntegerSize(value *big.Int) error {
 	// There are 2 cases when `BitLen` differs from the actual size:
 	// 1. Positive integer with the highest bit on byte boundary = 1.
@@ -634,7 +634,7 @@ func (i *ByteArray) Equals(s Item) bool {
 	return i.equalsLimited(s, &limit)
 }
 
-// equalsLimited compares ByteArray with provided stackitem using the limit.
+// equalsLimited compares ByteArray with provided stackitem using the Limit.
 func (i *ByteArray) equalsLimited(s Item, limit *int) bool {
 	if i == nil {
 		return s == nil
@@ -791,7 +791,7 @@ type MapElement struct {
 
 // Map represents a Map object. It's ordered, so we use slice representation,
 // which should be fine for maps with less than 32 or so elements. Given that
-// our VM has quite low limit of overall stack items, it should be good enough,
+// our VM has quite low Limit of overall stack items, it should be good enough,
 // but it can be extended with a real map for fast random access in the future
 // if needed.
 type Map struct {
