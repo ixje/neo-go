@@ -3,8 +3,9 @@ package tokencontract
 import (
 	"github.com/nspcc-dev/neo-go/examples/token/nep17"
 	"github.com/nspcc-dev/neo-go/pkg/interop"
+	"github.com/nspcc-dev/neo-go/pkg/interop/lib/address"
+	"github.com/nspcc-dev/neo-go/pkg/interop/runtime"
 	"github.com/nspcc-dev/neo-go/pkg/interop/storage"
-	"github.com/nspcc-dev/neo-go/pkg/interop/util"
 )
 
 const (
@@ -13,7 +14,7 @@ const (
 )
 
 var (
-	owner = util.FromAddress("NbrUYaZgyhSkNoRo9ugRyEMdUZxrhkNaWB")
+	owner = address.ToHash160("NbrUYaZgyhSkNoRo9ugRyEMdUZxrhkNaWB")
 	token nep17.Token
 	ctx   storage.Context
 )
@@ -60,4 +61,11 @@ func Transfer(from interop.Hash160, to interop.Hash160, amount int, data interfa
 // Mint initial supply of tokens
 func Mint(to interop.Hash160) bool {
 	return token.Mint(ctx, to)
+}
+
+func _deploy(data interface{}, isUpdate bool) {
+	if isUpdate {
+		return
+	}
+	token.Owner = runtime.GetScriptContainer().Sender
 }
